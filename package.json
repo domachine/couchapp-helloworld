@@ -1,0 +1,25 @@
+{
+  "name": "helloworld",
+  "version": "1.0.0",
+  "description": "This is meant to be an example CouchApp and to ship with most of the CouchApp goodies.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "scripts/watch app/app.js -o _attachments/app.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "browserify": {
+    "transform": [
+      "babelify"
+    ]
+  },
+  "dependencies": {
+    "babelify": "^6.3.0",
+    "browserify": "^11.2.0",
+    "react": "^0.13.3",
+    "rx": "^4.0.0",
+    "shelljs": "^0.5.3",
+    "watchify": "^3.4.0"
+  }
+}

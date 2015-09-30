@@ -1,0 +1,4 @@
+#!/bin/bash
+
+cd couch
+couchdb -a $PWD/local.ini

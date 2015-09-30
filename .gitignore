@@ -1,0 +1,7 @@
+/_attachments/app.js
+/_attachments/app.css
+/couch/data/*
+/couch/couch.log
+/couch/couch.uri
+/couch/erl_crash.dump
+/node_modules/*

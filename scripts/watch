@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+
+var fs = require('fs');
+var sh = require('shelljs');
+var w = require('watchify/bin/args')(process.argv.slice(2))
+    .on('log', msg => {
+      console.log(msg);
+      sh.exec('couchapp push');
+    })
+    .on('update', bundle);
+
+bundle();
+
+function bundle() {
+  w.bundle()
+    .on('error', err => {
+      console.error(err.message);
+      console.error(err.codeFrame);
+    })
+    .pipe(fs.createWriteStream(w.argv.o));
+}
+
+/* Local Variables:  */
+/* mode: js          */
+/* End:              */
