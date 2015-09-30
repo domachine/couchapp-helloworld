@@ -4,6 +4,7 @@
   "description": "This is meant to be an example CouchApp and to ship with most of the CouchApp goodies.",
   "main": "index.js",
   "scripts": {
+    "start": "scripts/start",
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "scripts/watch app/app.js -o _attachments/app.js"
   },

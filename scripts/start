@@ -1,4 +1,3 @@
 #!/bin/bash
 
-cd couch
-couchdb -a $PWD/local.ini
+( cd couch; couchdb -a $PWD/local.ini; )
