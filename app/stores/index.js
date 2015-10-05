@@ -5,14 +5,9 @@ import reduce from '../reducers';
 
 let store = new EventEmitter();
 let o = Observable
-  .fromEvent(store, 'change')
-  .flatMap(actions => Array.isArray(actions) ? actions : [actions])
-  .concatMap(action =>
-    action instanceof Promise
-      ? Observable.fromPromise(action)
-      : Observable.return(action)
-  )
-  .scan(reduce, {});
+    .fromEvent(store, 'change')
+    .flatMap(a => a)
+    .scan(reduce, {});
 
 store.dispatch = action => store.emit('change', action);
 store.subscribe = o.subscribe.bind(o);

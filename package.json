@@ -17,7 +17,9 @@
   },
   "dependencies": {
     "babelify": "^6.3.0",
+    "backbone": "^1.2.3",
     "browserify": "^11.2.0",
+    "jquery": "^2.1.4",
     "react": "^0.13.3",
     "rx": "^4.0.0",
     "shelljs": "^0.5.3",

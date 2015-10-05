@@ -1,39 +1,87 @@
 import {Observable} from 'rx';
 
-export const ADD_DOCUMENT = 'ADD_DOCUMENT';
+export const INDEX_DOCUMENTS = 'INDEX_DOCUMENTS';
+export const SHOW_DOCUMENT = 'SHOW_DOCUMENT';
 export const HYDRATE_DOCUMENTS = 'HYDRATE_DOCUMENTS';
 
-export function addDocument() {
-  return [
-    {type: 'START_SAVING'},
+/** Action creators **/
 
-    new Promise((resolve, reject) => {
-      let xhr = new XMLHttpRequest();
-      let doc = {type: 'test', name: 'Test it now!'};
-      xhr.open('POST', '/master');
-      xhr.setRequestHeader('Content-Type', 'application/json');
-      xhr.onload = () => resolve({type: ADD_DOCUMENT, document: doc});
-      xhr.send(JSON.stringify(doc));
-    }),
+let indexDocuments = simpleAction(INDEX_DOCUMENTS);
 
-    {type: 'STOP_SAVING'}
-  ];
+export {indexDocuments};
+
+export function showDocument(id) {
+  return load(
+    get(id).then(json => ({type: SHOW_DOCUMENT, document: json}))
+  );
+}
+
+export function createDocument(title) {
+  return load(
+    post({type: 'document', name: title})
+      .then(json => ({type: '@@NOOP'}))
+  );
 }
 
 export function loadDocuments() {
-  return [
-    {type: 'START_SAVING'},
+  return load(
+    view('documents-by-name')
+      .then(
+        json => ({
+          type: HYDRATE_DOCUMENTS,
+          documents: json.rows.map(r => r.doc)
+        })
+      )
+  );
+}
 
-    new Promise((resolve, reject) => {
-      let xhr = new XMLHttpRequest();
-      xhr.open('GET', '/master/_design/helloworld/_view/documents-by-name?include_docs=true');
-      xhr.onload = () => {
-        let json = JSON.parse(xhr.responseText);
-        resolve({type: HYDRATE_DOCUMENTS, documents: json.rows.map(r => r.doc)});
-      };
-      xhr.send();
-    }),
+function simpleAction(type, body = {}) {
+  return () => Observable.return({... body, type: type})
+}
 
-    {type: 'STOP_SAVING'}
-  ];
+function load(action) {
+  return Observable.from([
+    Observable.return({type: 'START_LOADING'}),
+    Observable.fromPromise(action),
+    Observable.return({type: 'STOP_LOADING'}),
+  ]).concatMap(a => a)
+}
+
+/** Utility functions to abstract couchdb API **/
+
+function get(id, options) {
+  return new Promise((resolve, reject) => {
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', `/master/${id}`);
+    xhr.onload = () => {
+      let json = JSON.parse(xhr.responseText);
+      resolve(json);
+    };
+    xhr.send();
+  });
+}
+
+function post(document, options) {
+  return new Promise((resolve, reject) => {
+    let xhr = new XMLHttpRequest();
+    xhr.open('POST', '/master');
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onload = () => {
+      let json = JSON.parse(xhr.responseText);
+      resolve(json);
+    };
+    xhr.send(JSON.stringify(document));
+  });
+}
+
+function view(view, options) {
+  return new Promise((resolve, reject) => {
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', `/master/_design/helloworld/_view/${view}?include_docs=true`);
+    xhr.onload = () => {
+      let json = JSON.parse(xhr.responseText);
+      resolve(json);
+    };
+    xhr.send();
+  });
 }

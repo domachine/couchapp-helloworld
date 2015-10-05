@@ -1,19 +1,38 @@
 import React from 'react';
+import {Observable} from 'rx';
+import Backbone from 'backbone';
 
 import store from './stores';
 import App from './components/app.jsx';
-import {loadDocuments} from './actions';
+import {
+  indexDocuments,
+  showDocument,
+
+  loadDocuments
+} from './actions';
 
 store.subscribe(state => {
   let props = {
     ... state,
     dispatch: store.dispatch
   };
-
   React.render(<App {... props}/>, document.body);
 });
 
 subscribeCouch(store);
+
+var router = new Backbone.Router({
+  routes: {
+    '': () => {
+      store.dispatch(indexDocuments());
+    },
+
+    'documents/:id': (id) => {
+      store.dispatch(showDocument(id));
+    }
+  }
+});
+Backbone.history.start();
 
 function subscribeCouch(store) {
   poll();

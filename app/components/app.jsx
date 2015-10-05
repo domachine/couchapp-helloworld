@@ -1,24 +1,21 @@
 import React, {Component} from 'react';
 
-import {
-  addDocument
-} from '../actions';
+import DocumentsIndex from './views/documents/index.jsx';
+import DocumentShow from './views/documents/show.jsx';
+
+var views = {
+  'documents/index': DocumentsIndex,
+  'documents/show': DocumentShow
+};
 
 export default class App extends Component {
-  handleClickAdd() {
-    this.props.dispatch(addDocument());
-  }
-
   render() {
+    console.log(this.props.view);
+    let View = views[this.props.view];
+
     return (
       <div>
-        <h1>Hello world</h1>
-        <button onClick={e => this.handleClickAdd()}></button>
-        <ul>
-          {this.props.documents.map(document =>
-            <li key={document._id}>{document.name}</li>
-          )}
-        </ul>
+        <View {... this.props}/>
       </div>
     );
   }
