@@ -1,33 +1,19 @@
-## Generated CouchApp
+# Couchdb starter
 
-This is meant to be an example CouchApp and to ship with most of the CouchApp goodies.
+Simple couchdb application that wants to demonstrate how you can build
+live updating apps without backend.
 
-Clone with git:
+## Usage
 
-    git clone git://github.com/couchapp/example.git
-    cd example
+Make sure you have couchdb installed.  Then use the following steps to
+start the application.
 
-Install with 
-    
-    couchapp push . http://localhost:5984/example
+    $ npm install
+    $ npm start
 
-or (if you have security turned on)
+    # Wait until couchdb comes up ...
 
-    couchapp push . http://adminname:adminpass@localhost:5984/example
-  
-You can also create this app by running
+    $ npm watch
+    $ open localhost:5984/master/_design/helloworld/index.html
 
-    couchapp generate example && cd example
-    couchapp push . http://localhost:5984/example
-
-Deprecated: *couchapp generate proto && cd proto*
-
-
-## Todo
-
-* factor CouchApp Commonjs to jquery.couch.require.js
-* use $.couch.app in app.js
-
-## License
-
-Apache 2.0
+Enjoy!
