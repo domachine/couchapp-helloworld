@@ -10,7 +10,6 @@ var views = {
 
 export default class App extends Component {
   render() {
-    console.log(this.props.view);
     let View = views[this.props.view];
 
     return (

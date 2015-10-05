@@ -11,43 +11,41 @@ import {
   loadDocuments
 } from './actions';
 
-store.subscribe(state => {
+/*
+ * Application routes.
+ */
+
+var routes = {
+  '': () => store.dispatch(indexDocuments()),
+  'documents/:id': (id) => store.dispatch(showDocument(id))
+};
+
+/*
+ * `render` renders the Application based on the given state.
+ */
+
+function render(state) {
   let props = {
     ... state,
     dispatch: store.dispatch
   };
   React.render(<App {... props}/>, document.body);
-});
+}
 
-subscribeCouch(store);
+store.subscribe(render);
+
+// Subscribe to couchdb changes.
+var source = new EventSource('/master/_changes?feed=eventsource&filter=_view&view=helloworld/documents-by-name&since=now');
+source.onerror = e => console.error(e);
+source.addEventListener('message', e => {
+  let {changes} = JSON.parse(e.data);
+  if (changes.length > 0) store.dispatch(loadDocuments());
+}, false);
+
+// Initially hydrate the documents store.
+store.dispatch(loadDocuments());
 
 var router = new Backbone.Router({
-  routes: {
-    '': () => {
-      store.dispatch(indexDocuments());
-    },
-
-    'documents/:id': (id) => {
-      store.dispatch(showDocument(id));
-    }
-  }
+  routes: routes
 });
 Backbone.history.start();
-
-function subscribeCouch(store) {
-  poll();
-
-  function poll(seq = null) {
-    const urlPrefix = '/master/_changes?feed=longpoll&filter=_view&view=helloworld/documents-by-name';
-    let xhr = new XMLHttpRequest();
-    let url = seq ? `${urlPrefix}&since=${seq}` : urlPrefix;
-    xhr.open('GET', url);
-    xhr.onload = function() {
-      let json = JSON.parse(this.responseText);
-      let {results, last_seq} = json;
-      if (results.length > 0) store.dispatch(loadDocuments());
-      poll(last_seq);
-    };
-    xhr.send();
-  }
-}
